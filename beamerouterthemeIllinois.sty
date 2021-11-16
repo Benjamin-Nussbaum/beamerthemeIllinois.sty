@@ -1,0 +1,88 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Copyright 2021 Benjamin Nussbaum
+%
+% Based on the `metropolis' beamer theme,
+% Copyright 2015 Matthias Vogelgesang and the LaTeX community. A full list of
+% contributors can be found at
+%
+%     https://github.com/matze/mtheme/graphs/contributors
+%
+% and the original template was based on the HSRM theme by Benjamin Weiss.
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0
+% International License (https://creativecommons.org/licenses/by-sa/4.0/).
+
+\newif\if@nav
+\DeclareOptionBeamer{nav}{\@navtrue}
+\ProcessOptionsBeamer
+
+\mode<presentation>
+
+% Make the progress bar easier to see, but not obtrusive
+\setlength{\metropolis@progressinheadfoot@linewidth}{0.8pt} % Default 0.4pt
+
+% ------------------------------------------------------------------------------
+% Don't include \appendix frames in the \totalframenumber
+% (Adapted from https://www.ctan.org/pkg/appendixnumberbeamer)
+
+\def\mainframenumber{-1}
+% When \appendix is called, record the total number of main content frames
+\pretocmd{\appendix}{\xdef\mainframenumber{\theframenumber}}{}{}
+
+% At the end of document, set the \totalframenumber
+% to the number of main content frames recorded at the \appendix call.
+\AtEndDocument%
+{
+    \ifnum\mainframenumber>0
+    \immediate\write\@auxout
+    {
+        \string\@writefile{nav}
+        {
+            \headcommand
+            {
+                \gdef\noexpand\inserttotalframenumber{\mainframenumber}
+            }
+        }
+    }
+    \fi
+}
+
+% ------------------------------------------------------------------------------
+% If a filename is provided, add the image at the top right of each frame
+\newcommand{\frametitlelogo}[1]
+{
+    \ifx#1\@empty\else
+        \addtobeamertemplate{frametitle}{}
+        {
+            \begin{tikzpicture}[remember picture,overlay]
+            \node[below=1.45\metropolis@frametitle@padding, left]
+                at (current page.north east)
+            {
+                \raggedleft
+                \includegraphics[height=2.9\metropolis@frametitle@padding]{#1}
+            };
+            \end{tikzpicture}
+        }
+    \fi
+}
+
+% ------------------------------------------------------------------------------
+% If the [nav] option is used, add a section navigation bar in the footline
+\if@nav
+    \setbeamertemplate{footline}
+    {
+        \begin{beamercolorbox}[sep=1.2ex]{section in head/foot}%
+        \insertsectionnavigationhorizontal{\paperwidth}{}
+        {
+            \hspace{1em}
+            \usebeamertemplate*{frame numbering}
+            \hspace{2em}
+        }
+        \end{beamercolorbox}%
+    }
+    % Adjust vertical alignment of body between frametitle and nav bar
+    \addtobeamertemplate{frametitle}{}{\vspace*{-\footheight}}
+\fi
+
+\mode
+<all>
