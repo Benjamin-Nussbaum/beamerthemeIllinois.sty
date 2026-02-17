@@ -20,6 +20,27 @@
 
 % Make the progress bar easier to see, but not obtrusive
 \setlength{\metropolis@progressinheadfoot@linewidth}{2.0pt} % Default 0.4pt
+\setbeamertemplate{progress bar in head/foot}{
+  \nointerlineskip
+  % \setlength{\metropolis@progressinheadfoot}{%
+  %   \paperwidth * \ratio{\insertframenumber pt}{\inserttotalframenumber pt}%
+  % }%
+  % Since \totalframenumber is capped at the \appendix call, cap the progress bar length
+  % at the \paperwidth to prevent unwanted artefacts with \pgfpagesuselayout{n on 1} handouts.
+  \pgfmathsetlength{\metropolis@progressinheadfoot}{%
+    % Subtract 1 (ignoring the title frame) to improve the visual progression
+    % of the progress bar in shorter presentations.
+    min(\paperwidth * (\insertframenumber-1)/(\inserttotalframenumber-1), \paperwidth))%
+  }%
+  \begin{beamercolorbox}[wd=\paperwidth]{progress bar in head/foot}
+    \tikzexternaldisable%
+    \begin{tikzpicture}
+      \fill[bg] (0,0) rectangle (\paperwidth, \metropolis@progressinheadfoot@linewidth);
+      \fill[fg] (0,0) rectangle (\metropolis@progressinheadfoot, \metropolis@progressinheadfoot@linewidth);
+    \end{tikzpicture}%
+    \tikzexternalenable%
+  \end{beamercolorbox}
+}
 
 % ------------------------------------------------------------------------------
 % Don't include \appendix frames in the \totalframenumber
